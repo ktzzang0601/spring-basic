@@ -2,16 +2,12 @@ package com.spring.basic.fc.springbasic.service;
 
 import com.spring.basic.fc.springbasic.dto.CreateDeveloper;
 import com.spring.basic.fc.springbasic.entity.Developer;
-import com.spring.basic.fc.springbasic.entity.DeveloperSkillType;
-import com.spring.basic.fc.springbasic.exception.DMakerErrorCode;
 import com.spring.basic.fc.springbasic.exception.DMakerException;
 import com.spring.basic.fc.springbasic.repository.DeveloperRepository;
 import com.spring.basic.fc.springbasic.type.DeveloperLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static com.spring.basic.fc.springbasic.exception.DMakerErrorCode.DUPLICATED_MEMBER_ID;
 import static com.spring.basic.fc.springbasic.exception.DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED;
@@ -25,24 +21,26 @@ public class DMakerService {
     private final DeveloperRepository developerRepository;
 
     @Transactional
-    public void createDeveloper(CreateDeveloper.Request request) {
+    public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
         validateCreateDeveloperRequest(request);
 
+        //business logic start
         Developer developer = Developer.builder()
-                .developerLevel(DeveloperLevel.JUNIOR)
-                .developerSkillType(DeveloperSkillType.FRONT_END)
-                .experienceYears(2)
-                .name("Olaf")
-                .age(5)
+                .developerLevel(request.getDeveloperLevel())
+                .developerSkillType(request.getDeveloperSkillType())
+                .experienceYears(request.getExperienceYears())
+                .memberId(request.getMemberId())
+                .name(request.getName())
+                .age(request.getAge())
                 .build();
-
         developerRepository.save(developer);
+        return CreateDeveloper.Response.fromEntity(developer);
     }
 
     private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
         //business validation
         DeveloperLevel developerLevel = request.getDeveloperLevel();
-        Integer experienceYear = request.getExperienceYear();
+        Integer experienceYear = request.getExperienceYears();
         if (developerLevel == DeveloperLevel.SENIOR
                 && experienceYear < 10) {
             throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);

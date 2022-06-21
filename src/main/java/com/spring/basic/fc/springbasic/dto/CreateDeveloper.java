@@ -1,5 +1,6 @@
 package com.spring.basic.fc.springbasic.dto;
 
+import com.spring.basic.fc.springbasic.entity.Developer;
 import com.spring.basic.fc.springbasic.entity.DeveloperSkillType;
 import com.spring.basic.fc.springbasic.type.DeveloperLevel;
 import lombok.*;
@@ -25,7 +26,7 @@ public class CreateDeveloper {
         @NotNull
         @Min(0)
         @Max(20)
-        private Integer experienceYear;
+        private Integer experienceYears;
         @NotNull
         @Size(min = 3, max = 50, message = "memberId size must 3~50")
         private String memberId;
@@ -50,5 +51,16 @@ public class CreateDeveloper {
         private String memberId;
         private String name;
         private Integer age;
+
+        public static Response fromEntity(Developer developer) {
+            return Response.builder()
+                    .developerLevel(developer.getDeveloperLevel())
+                    .developerSkillType(developer.getDeveloperSkillType())
+                    .experienceYear(developer.getExperienceYears())
+                    .memberId(developer.getMemberId())
+                    .name(developer.getName())
+                    .age(developer.getAge())
+                    .build();
+        }
     }
 }
