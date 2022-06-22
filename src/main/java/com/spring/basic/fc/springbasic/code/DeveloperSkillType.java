@@ -1,4 +1,4 @@
-package com.spring.basic.fc.springbasic.entity;
+package com.spring.basic.fc.springbasic.code;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

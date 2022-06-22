@@ -1,7 +1,7 @@
 package com.spring.basic.fc.springbasic.dto;
 
 import com.spring.basic.fc.springbasic.entity.Developer;
-import com.spring.basic.fc.springbasic.entity.DeveloperSkillType;
+import com.spring.basic.fc.springbasic.code.DeveloperSkillType;
 import com.spring.basic.fc.springbasic.type.DeveloperLevel;
 import lombok.*;
 

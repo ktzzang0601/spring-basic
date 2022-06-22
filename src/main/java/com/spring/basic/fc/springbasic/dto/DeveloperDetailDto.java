@@ -1,13 +1,10 @@
 package com.spring.basic.fc.springbasic.dto;
 
+import com.spring.basic.fc.springbasic.code.StatusCode;
 import com.spring.basic.fc.springbasic.entity.Developer;
-import com.spring.basic.fc.springbasic.entity.DeveloperSkillType;
+import com.spring.basic.fc.springbasic.code.DeveloperSkillType;
 import com.spring.basic.fc.springbasic.type.DeveloperLevel;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 /**
  * Created By Cheetah on 2022-06-22.
@@ -22,6 +19,7 @@ public class DeveloperDetailDto {
     private DeveloperSkillType developerSkillType;
     private Integer experienceYears;
     private String memberId;
+    private StatusCode statusCode;
     private String name;
     private Integer age;
 
@@ -31,6 +29,7 @@ public class DeveloperDetailDto {
                 .developerSkillType(developer.getDeveloperSkillType())
                 .experienceYears(developer.getExperienceYears())
                 .memberId(developer.getMemberId())
+                .statusCode(developer.getStatusCode())
                 .name(developer.getName())
                 .age(developer.getAge())
                 .build();
