@@ -1,6 +1,9 @@
 package com.spring.basic.fc.springbasic.service;
 
 import com.spring.basic.fc.springbasic.dto.CreateDeveloper;
+import com.spring.basic.fc.springbasic.dto.DeveloperDetailDto;
+import com.spring.basic.fc.springbasic.dto.DeveloperDto;
+import com.spring.basic.fc.springbasic.dto.EditDeveloper;
 import com.spring.basic.fc.springbasic.entity.Developer;
 import com.spring.basic.fc.springbasic.exception.DMakerException;
 import com.spring.basic.fc.springbasic.repository.DeveloperRepository;
@@ -9,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.spring.basic.fc.springbasic.exception.DMakerErrorCode.DUPLICATED_MEMBER_ID;
-import static com.spring.basic.fc.springbasic.exception.DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.spring.basic.fc.springbasic.exception.DMakerErrorCode.*;
 
 /**
  * Created By Cheetah on 2022-06-20.
@@ -39,8 +44,42 @@ public class DMakerService {
 
     private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
         //business validation
-        DeveloperLevel developerLevel = request.getDeveloperLevel();
-        Integer experienceYear = request.getExperienceYears();
+        validateDeveloperLevel(
+                request.getDeveloperLevel(),
+                request.getExperienceYears()
+        );
+
+        developerRepository.findByMemberId(request.getMemberId())
+                .ifPresent((developer -> {
+                    throw new DMakerException(DUPLICATED_MEMBER_ID);
+                }));
+    }
+
+    @Transactional
+    public DeveloperDetailDto editDeveloper(String memberId, EditDeveloper.Request request) {
+        validateEditDeveloperRequest(request, memberId);
+
+       Developer developer = developerRepository.findByMemberId(memberId).orElseThrow(
+                () -> new DMakerException(NO_DEVELOPER)
+        );
+        developer.setDeveloperLevel(request.getDeveloperLevel());
+        developer.setDeveloperSkillType(request.getDeveloperSkillType());
+        developer.setExperienceYears(request.getExperienceYears());
+
+        return DeveloperDetailDto.fromEntity(developer);
+    }
+
+    private void validateEditDeveloperRequest(
+            EditDeveloper.Request request,
+            String memberId
+    ) {
+        validateDeveloperLevel(
+                request.getDeveloperLevel(),
+                request.getExperienceYears()
+        );
+    }
+
+    private void validateDeveloperLevel(DeveloperLevel developerLevel, Integer experienceYear) {
         if (developerLevel == DeveloperLevel.SENIOR
                 && experienceYear < 10) {
             throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
@@ -52,10 +91,17 @@ public class DMakerService {
         if (developerLevel == DeveloperLevel.JUNIOR && experienceYear > 4) {
             throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
         }
+    }
 
-        developerRepository.findByMemberId(request.getMemberId())
-                .ifPresent((developer -> {
-                    throw new DMakerException(DUPLICATED_MEMBER_ID);
-                }));
+    public List<DeveloperDto> getAllDevelopers() {
+        return developerRepository.findAll()
+                .stream().map(DeveloperDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    public DeveloperDetailDto getDeveloperDetail(String memberId) {
+        return developerRepository.findByMemberId(memberId)
+                .map(DeveloperDetailDto::fromEntity)
+                .orElseThrow(() -> new DMakerException(NO_DEVELOPER));
     }
 }
