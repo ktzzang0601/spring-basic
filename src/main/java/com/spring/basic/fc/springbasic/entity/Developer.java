@@ -2,6 +2,7 @@ package com.spring.basic.fc.springbasic.entity;
 
 import com.spring.basic.fc.springbasic.code.DeveloperSkillType;
 import com.spring.basic.fc.springbasic.code.StatusCode;
+import com.spring.basic.fc.springbasic.dto.CreateDeveloper;
 import com.spring.basic.fc.springbasic.type.DeveloperLevel;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -45,4 +46,5 @@ public class Developer {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
 }

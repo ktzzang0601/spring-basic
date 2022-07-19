@@ -20,6 +20,7 @@ import static com.spring.basic.fc.springbasic.code.DeveloperSkillType.FRONT_END;
 import static com.spring.basic.fc.springbasic.code.StatusCode.*;
 import static com.spring.basic.fc.springbasic.type.DeveloperLevel.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -72,6 +73,8 @@ class DMakerServiceTest {
         //given
         given(developerRepository.findByMemberId(anyString()))
                 .willReturn(Optional.empty());
+        given(developerRepository.save(any()))
+                .willReturn(defaultDeveloper);
         ArgumentCaptor<Developer> captor =
                 ArgumentCaptor.forClass(Developer.class);
         //when

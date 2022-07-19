@@ -36,7 +36,13 @@ public class DMakerService {
         validateCreateDeveloperRequest(request);
 
         //business logic start
-        Developer developer = Developer.builder()
+        return CreateDeveloper.Response.fromEntity(
+                developerRepository.save(createDeveloperFromRequest(request))
+        );
+    }
+
+    public static Developer createDeveloperFromRequest(CreateDeveloper.Request request) {
+        return Developer.builder()
                 .developerLevel(request.getDeveloperLevel())
                 .developerSkillType(request.getDeveloperSkillType())
                 .experienceYears(request.getExperienceYears())
@@ -45,8 +51,6 @@ public class DMakerService {
                 .name(request.getName())
                 .age(request.getAge())
                 .build();
-        developerRepository.save(developer);
-        return CreateDeveloper.Response.fromEntity(developer);
     }
 
     private void validateCreateDeveloperRequest(@NonNull CreateDeveloper.Request request) {
@@ -68,14 +72,19 @@ public class DMakerService {
                 request.getDeveloperLevel(),
                 request.getExperienceYears());
 
-        Developer developer = developerRepository.findByMemberId(memberId).orElseThrow(
-                () -> new DMakerException(NO_DEVELOPER)
+        return DeveloperDetailDto.fromEntity(
+                getUpdatedDeveloperFromRequest(
+                        request, getDeveloperByMemberId(memberId)
+                )
         );
+    }
+
+    private Developer getUpdatedDeveloperFromRequest(EditDeveloper.Request request, Developer developer) {
         developer.setDeveloperLevel(request.getDeveloperLevel());
         developer.setDeveloperSkillType(request.getDeveloperSkillType());
         developer.setExperienceYears(request.getExperienceYears());
 
-        return DeveloperDetailDto.fromEntity(developer);
+        return developer;
     }
 
     private void validateDeveloperLevel(DeveloperLevel developerLevel, Integer experienceYear) {
@@ -101,8 +110,11 @@ public class DMakerService {
 
     @Transactional(readOnly = true)
     public DeveloperDetailDto getDeveloperDetail(String memberId) {
+        return DeveloperDetailDto.fromEntity(getDeveloperByMemberId(memberId));
+    }
+
+    private Developer getDeveloperByMemberId(String memberId) {
         return developerRepository.findByMemberId(memberId)
-                .map(DeveloperDetailDto::fromEntity)
                 .orElseThrow(() -> new DMakerException(NO_DEVELOPER));
     }
 
