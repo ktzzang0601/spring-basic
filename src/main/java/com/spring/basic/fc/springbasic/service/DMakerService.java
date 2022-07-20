@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.spring.basic.fc.springbasic.constant.DMakerConstant.MAX_JUNIOR_EXPERIENCE_YEARS;
+import static com.spring.basic.fc.springbasic.constant.DMakerConstant.MIN_SENIOR_EXPERIENCE_YEARS;
 import static com.spring.basic.fc.springbasic.exception.DMakerErrorCode.*;
 
 /**
@@ -55,8 +57,7 @@ public class DMakerService {
 
     private void validateCreateDeveloperRequest(@NonNull CreateDeveloper.Request request) {
         //business validation
-        validateDeveloperLevel(
-                request.getDeveloperLevel(),
+        request.getDeveloperLevel().validateExperienceYears(
                 request.getExperienceYears()
         );
 
@@ -68,9 +69,9 @@ public class DMakerService {
 
     @Transactional
     public DeveloperDetailDto editDeveloper(String memberId, EditDeveloper.Request request) {
-        validateDeveloperLevel(
-                request.getDeveloperLevel(),
-                request.getExperienceYears());
+        request.getDeveloperLevel().validateExperienceYears(
+                request.getExperienceYears()
+        );
 
         return DeveloperDetailDto.fromEntity(
                 getUpdatedDeveloperFromRequest(
@@ -85,20 +86,6 @@ public class DMakerService {
         developer.setExperienceYears(request.getExperienceYears());
 
         return developer;
-    }
-
-    private void validateDeveloperLevel(DeveloperLevel developerLevel, Integer experienceYear) {
-        if (developerLevel == DeveloperLevel.SENIOR
-                && experienceYear < 10) {
-            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if (developerLevel == DeveloperLevel.JUNGNIOR
-                && (experienceYear < 4 || experienceYear > 10)) {
-            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if (developerLevel == DeveloperLevel.JUNIOR && experienceYear > 4) {
-            throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
     }
 
     @Transactional
